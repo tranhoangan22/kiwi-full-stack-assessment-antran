@@ -1,5 +1,9 @@
 version: "3.8"
 services:
+  server:
+    build: .
+    ports:
+      - "4000:4000"
   postgres:
     image: postgres:13.1-alpine
     container_name: kiwi-cc-postgres
