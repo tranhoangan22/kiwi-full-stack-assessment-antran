@@ -110,8 +110,8 @@ const DoorsList = () => {
           .slice(0, numberOfDoorsShown)
           .map((door) => (
             <Door
-              key={door.id}
-              id={door.id}
+              key={door.door_id}
+              id={door.door_id}
               name={door.name}
               street={door.street}
               postal_code={door.postal_code}

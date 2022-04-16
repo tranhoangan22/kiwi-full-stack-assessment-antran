@@ -1,5 +1,5 @@
-export const getDate = (unixTimestamp) => {
-  const fullDateTime = new Date(unixTimestamp * 1000);
+export const getDate = (timestamp) => {
+  const fullDateTime = new Date(timestamp);
   return (
     fullDateTime.toLocaleDateString("en-de") +
     " " +

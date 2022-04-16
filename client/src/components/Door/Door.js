@@ -46,27 +46,16 @@ const Door = ({ id, name, street, postal_code, city, sensor_uuid }) => {
 
   const handleClick = () => navigate(`./door/${id}`);
 
-  const getComDate = async (sensor_uuid) => {
-    try {
-      const result = await fetchLastSensorCommunication(sensor_uuid);
-      if (result.status === 200) {
-        return getDate(result.data);
-      } else {
-        return null;
-      }
-    } catch (error) {
-      console.log(error.message);
-    }
-  };
-
   useEffect(() => {
-    getComDate(sensor_uuid).then((date) => {
-      if (date) {
-        setLastCommunication(date.toString());
-      } else {
-        setLastCommunication("Not known");
-      }
-    });
+    if (sensor_uuid) {
+      fetchLastSensorCommunication(sensor_uuid).then((result) => {
+        if (result.status === 200) {
+          setLastCommunication(getDate(result.data * 1000));
+        } else {
+          setLastCommunication("Not Found");
+        }
+      });
+    }
   }, [sensor_uuid]);
 
   return (

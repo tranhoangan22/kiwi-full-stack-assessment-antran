@@ -11,6 +11,9 @@ const StyledHeader = styled.header`
 
 const StyledLogo = styled.img`
   width: 200px;
+  :hover {
+    cursor: pointer;
+  }
 `;
 
 const Header = () => (
