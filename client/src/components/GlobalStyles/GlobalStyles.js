@@ -94,6 +94,28 @@ video {
   border: 0;
   vertical-align: baseline;
 }
+
+/**
+ * Best practice from http://callmenick.com/post/the-new-box-sizing-reset
+ * TLDR: It’s easier to override and a slight performance boost.
+ */
+ *,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+html {
+  box-sizing: border-box;
+  [type='button'] {
+    appearance: none;
+  }
+}
+body {
+  background-color: #FAFBFC;
+  color: #0F131A;
+  font-size: 16px;
+  line-height: 24px;
+}
 `;
 
 export default GlobalStyles;

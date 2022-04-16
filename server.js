@@ -34,31 +34,15 @@ app.get("/doors", async (req, res) => {
   }
 });
 
-// app.get("/addresses/:id", async (req, res) => {
-//   const { id } = req.params;
-//   try {
-//     const data = await postgresClient.query(
-//       "SELECT * FROM addresses WHERE id = $1",
-//       [id]
-//     );
-//     res.json(data.rows[0]);
-//   } catch (error) {
-//     console.log(error.message);
-//   }
-// });
-
 app.get("/sensorstatus/:uuid", async (req, res) => {
-  // const uuid = "911706b9de1b41fe90530944448ea34b";
   const { uuid } = req.params;
-  console.log(uuid);
   try {
     await redisClient.connect();
     const jsonData = await redisClient.GET(`last_communication_ts:${uuid}`);
-    console.log(jsonData);
     if (jsonData) {
-      res.json(JSON.parse(jsonData));
+      res.status(200).json(JSON.parse(jsonData));
     } else {
-      res.json("no value found for such key");
+      res.status(204).json("no value found for such key");
     }
     await redisClient.disconnect();
   } catch (error) {

@@ -1,59 +1,127 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState } from "react";
 import styled from "styled-components";
 
-import { fetchDoors, fetchLastSensorCommunication } from "../../services/apis";
+import Door from "../../components/Door/Door";
+
+import { fetchDoors } from "../../services/apis";
+import { compare } from "../../services/compare";
 
 const Container = styled.div`
-  max-width: 880px;
+  max-width: 80%;
   margin: 16px auto;
   padding: 0 16px;
+
+  @media screen and (max-width: 800px) {
+    max-width: 100%;
+  }
 `;
 
 const Heading = styled.h1`
-  font-size: "42px";
-  line-height: "48px";
+  font-size: 36px;
+  line-height: 44px;
   font-weight: 700;
   margin-bottom: 24px;
 `;
 
+const ListHeader = styled.div`
+  font-size: 22px;
+  line-height: 24px;
+  width: 100%;
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+
+  @media screen and (max-width: 800px) {
+    font-size: 17px;
+  }
+`;
+
+const ListHeaderblock = styled.div`
+  :first-child {
+    width: 10%;
+  }
+  :nth-child(2) {
+    width: 20%;
+  }
+  width: 35%;
+`;
+
+const ButtonContainer = styled.button`
+  width: 100%;
+  border: none;
+  color: white;
+  font-size: 19px;
+  line-height: 24px;
+  padding: 12px;
+  margin-top: 12px;
+  border-radius: 5px;
+  background-color: #85c88a;
+  font-weight: 700;
+  transition: opacity 120ms ease-in-out 0s, transform 120ms ease-in-out 0s,
+    visibility 120ms ease-in-out 0s;
+
+  &:hover {
+    cursor: pointer;
+    background-color: #019267;
+  }
+
+  &:active {
+    background-color: #019267;
+  }
+`;
+
 const DoorsList = () => {
   const [doors, setDoors] = useState([]);
-  const [doorsPlus, setDoorsPlus] = useState([]);
+  const [numberOfDoorsShown, setNumberOfDoorsShown] = useState(10);
+  const [showLoadMoreButton, setShowLoadMoreButton] = useState(10);
 
-  const updateSensorPlus = useCallback(async () => {
-    if (doors && doors.length !== 0) {
-      const plus = await Promise.all(
-        doors.map(async (door) => {
-          const sensorStatus = await fetchLastSensorCommunication(
-            door.sensor_uuid
-          );
-          return Promise.resolve({ ...door, sensorStatus });
-        })
-      );
-      setDoorsPlus(plus);
+  const handleClick = () => {
+    if (doors.length > numberOfDoorsShown + 10) {
+      setNumberOfDoorsShown(numberOfDoorsShown + 10);
+    } else {
+      setNumberOfDoorsShown(doors.length);
+      setShowLoadMoreButton(false);
     }
-  }, [doors]);
+  };
 
   useEffect(() => {
-    fetchDoors().then((response) => setDoors(response.data));
+    fetchDoors().then((response) => setDoors(response.data.sort(compare)));
   }, []);
-
-  useEffect(() => {
-    updateSensorPlus();
-  }, [doors, updateSensorPlus]);
-
-  console.log(doors);
-  console.log(doorsPlus);
 
   return (
     <Container>
       <Heading>All Doors</Heading>
+      <ListHeader>
+        <ListHeaderblock>
+          <span>ID</span>
+        </ListHeaderblock>
+        <ListHeaderblock>
+          <span>Name</span>
+        </ListHeaderblock>
+        <ListHeaderblock>
+          <span>Address</span>
+        </ListHeaderblock>
+        <ListHeaderblock>
+          <span>Last Communication</span>
+        </ListHeaderblock>
+      </ListHeader>
       {doors &&
-        doors.map((door) => (
-          <div key={door.id}>
-            {door.street} - {door.postal_code} - {door.city} - {door.name}
-          </div>
-        ))}
+        doors
+          .slice(0, numberOfDoorsShown)
+          .map((door) => (
+            <Door
+              key={door.id}
+              id={door.id}
+              name={door.name}
+              street={door.street}
+              postal_code={door.postal_code}
+              city={door.city}
+              sensor_uuid={door.sensor_uuid}
+            />
+          ))}
+      {showLoadMoreButton && (
+        <ButtonContainer onClick={handleClick}>Load More</ButtonContainer>
+      )}
     </Container>
   );
 };
