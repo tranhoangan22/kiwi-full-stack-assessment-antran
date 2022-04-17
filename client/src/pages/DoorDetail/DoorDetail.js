@@ -226,7 +226,7 @@ const DoorDetail = () => {
           <span>User has been granted permission to this door!</span>
         )}
         {updateUserPermissionStatus === "failure" && (
-          <span>User of ID already has permission to this door!</span>
+          <span>User of this ID already has permission to this door!</span>
         )}
       </MessageContainer>
     </DoorContainer>
