@@ -24,3 +24,11 @@ services:
     container_name: express_server
     ports:
       - "4000:4000"
+
+  client:
+    build: ./client
+    container_name: react_client
+    ports:
+      - "3000:3000"
+    stdin_open: true
+    tty: true

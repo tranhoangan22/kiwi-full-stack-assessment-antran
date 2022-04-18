@@ -97,13 +97,49 @@ app.post("/userpermission", async (req, res) => {
   }
 });
 
-app.get("/sensorstatus/:uuid", async (req, res) => {
+app.get("/lastdooropening/:uuid", async (req, res) => {
+  const { uuid } = req.params;
+  try {
+    await redisClient.connect();
+    const jsonData = await redisClient.GET(`last_opening_ts:${uuid}`);
+    if (jsonData) {
+      res.status(200).json(jsonData);
+    } else {
+      res.status(204).json("no value found for such key");
+    }
+    await redisClient.disconnect();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+app.get("/lastsensorcommunication/:uuid", async (req, res) => {
   const { uuid } = req.params;
   try {
     await redisClient.connect();
     const jsonData = await redisClient.GET(`last_communication_ts:${uuid}`);
     if (jsonData) {
-      res.status(200).json(JSON.parse(jsonData));
+      res.status(200).json(jsonData);
+    } else {
+      res.status(204).json("no value found for such key");
+    }
+    await redisClient.disconnect();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
+// Get both last door opening and last sensor communication
+app.get("/sensorstatus/:uuid", async (req, res) => {
+  const { uuid } = req.params;
+  try {
+    await redisClient.connect();
+    const jsonData = await redisClient.MGET([
+      `last_opening_ts:${uuid}`,
+      `last_communication_ts:${uuid}`,
+    ]);
+    if (jsonData) {
+      res.status(200).json(jsonData);
     } else {
       res.status(204).json("no value found for such key");
     }
