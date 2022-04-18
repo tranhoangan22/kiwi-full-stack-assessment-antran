@@ -24,6 +24,7 @@ const postgresClient = new Pool({
 });
 
 // ROUTES
+
 app.get("/doors", async (req, res) => {
   try {
     const data = await postgresClient.query(
@@ -71,14 +72,18 @@ app.post("/userpermission", async (req, res) => {
         isUserPermittedToDoor = true;
       }
     }
-    console.log(isUserPermittedToDoor);
 
     if (!isUserPermittedToDoor) {
       await postgresClient.query(
         "INSERT INTO user_door_permissions (user_id, door_id, creation_time) VALUES ($1, $2, $3)",
         [userId, doorId, currentTimestamp]
       );
-      res.status(200).json({ userId, doorId });
+      const userName = await postgresClient.query(
+        "SELECT first_name, last_name FROM users WHERE id = $1",
+        [userId]
+      );
+
+      res.status(200).json({ userName: userName.rows });
     } else {
       res
         .status(201)

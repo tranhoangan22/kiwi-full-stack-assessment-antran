@@ -1,11 +1,5 @@
 version: "3.8"
 services:
-  server:
-    build: .
-    container_name: express_server
-    ports:
-      - "4000:4000"
-
   postgres:
     image: postgres:13.1-alpine
     container_name: kiwi-cc-postgres
@@ -24,3 +18,9 @@ services:
       - "6379:6379"
     volumes:
       - ./data/redis:/data
+
+  server:
+    build: .
+    container_name: express_server
+    ports:
+      - "4000:4000"

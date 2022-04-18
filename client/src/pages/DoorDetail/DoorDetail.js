@@ -108,21 +108,25 @@ const MessageContainer = styled.div`
 
 const DoorDetail = () => {
   const { id } = useParams();
-  const [doorDetails, setDoorDetails] = useState(null);
-  const [lastCommunication, setLastCommunication] = useState(null);
   const [addedUserID, setAddedUserId] = useState("");
+  const [doorDetails, setDoorDetails] = useState(null);
+  const [doorUsers, setDoorUsers] = useState([]);
+  const [lastCommunication, setLastCommunication] = useState(null);
   const [updateUserPermissionStatus, setUpdateUserPermissionStatus] =
     useState("none");
 
   const handleChange = (e) => setAddedUserId(e.target.value);
 
   const handleSubmit = (e) => {
-    console.log(addedUserID);
     e.preventDefault();
     setAddedUserId("");
     updateUserPermission(addedUserID, id).then((result) => {
       if (result.status === 200) {
         setUpdateUserPermissionStatus("success");
+        setDoorUsers([
+          ...doorUsers,
+          `${result.data.userName[0].first_name} ${result.data.userName[0].last_name}`,
+        ]);
       } else {
         setUpdateUserPermissionStatus("failure");
       }
@@ -130,7 +134,14 @@ const DoorDetail = () => {
   };
 
   useEffect(() => {
-    fetchDoorDetails(id).then((result) => setDoorDetails(result.data));
+    fetchDoorDetails(id).then((result) => {
+      setDoorDetails(result.data);
+      setDoorUsers(
+        result.data.doorUsers.map(
+          (user) => user.first_name + " " + user.last_name
+        )
+      );
+    });
   }, [id]);
 
   useEffect(() => {
@@ -197,13 +208,8 @@ const DoorDetail = () => {
         <DoorDetailEntry>
           <span>List of Users with Permission</span>
           <UserListContainer>
-            {doorDetails &&
-              doorDetails.doorUsers &&
-              doorDetails.doorUsers.map((user) => (
-                <span key={user.user_id}>
-                  {user.first_name} {user.last_name}
-                </span>
-              ))}
+            {doorUsers &&
+              doorUsers.map((user, index) => <span key={index}>{user}</span>)}
           </UserListContainer>
         </DoorDetailEntry>
       </DoorDetailsContainer>

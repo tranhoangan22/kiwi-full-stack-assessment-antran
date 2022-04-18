@@ -97,14 +97,16 @@ const DoorsList = () => {
       fetchMultipleLastSensorCommunications(
         doors.map((door) => door.sensor_uuid)
       ).then((result) => {
-        const doorsWithSensorsInfo = [];
-        for (let i = 0; i < doors.length; i++) {
-          doorsWithSensorsInfo[i] = {
-            ...doors[i],
-            sensorLastCommunication: getDate(result.data[i] * 1000),
-          };
+        if (result.status === 200) {
+          const doorsWithSensorsInfo = [];
+          for (let i = 0; i < doors.length; i++) {
+            doorsWithSensorsInfo[i] = {
+              ...doors[i],
+              sensorLastCommunication: getDate(result.data[i] * 1000),
+            };
+          }
+          setDoorWithSensorLastCommunications(doorsWithSensorsInfo);
         }
-        setDoorWithSensorLastCommunications(doorsWithSensorsInfo);
       });
     }
   }, [doors]);
