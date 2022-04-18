@@ -9,11 +9,26 @@ function App() {
   return (
     <div>
       <GlobalStyles />
-      <Header />
       <Router>
         <Routes>
-          <Route path="/" element={<DoorsList />} />
-          <Route path="/door/:id" element={<DoorDetail />} />
+          <Route
+            path="/"
+            element={
+              <>
+                <Header />
+                <DoorsList />
+              </>
+            }
+          />
+          <Route
+            path="/door/:id"
+            element={
+              <>
+                <Header />
+                <DoorDetail />
+              </>
+            }
+          />
         </Routes>
       </Router>
     </div>

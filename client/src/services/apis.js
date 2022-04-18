@@ -4,8 +4,14 @@ export const fetchDoors = async () => {
   return axios.get("http://localhost:4000/doors");
 };
 
-export const fetchLastSensorCommunication = async (sensor_uuid) => {
-  return axios.get(`http://localhost:4000/sensorstatus/${sensor_uuid}`);
+export const fetchLastSensorCommunication = async (sensorUUID) => {
+  return axios.get(`http://localhost:4000/sensorstatus/${sensorUUID}`);
+};
+
+export const fetchMultipleLastSensorCommunications = async (sensorUUIDs) => {
+  return axios.get("http://localhost:4000/sensorstatuses", {
+    params: sensorUUIDs,
+  });
 };
 
 export const fetchDoorDetails = async (door_id) => {

@@ -1,7 +1,6 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-import "./kiwi-logo.png";
 
 const StyledHeader = styled.header`
   width: 100%;
@@ -16,13 +15,18 @@ const StyledLogo = styled.img`
   }
 `;
 
-const Header = () => (
-  <StyledHeader>
-    <StyledLogo
-      src="https://we-are-hiring.cdn.personio.de/logos/189/social/d6a44328d5a5837c3d130feca49771a1.png"
-      alt="kiwi-logo"
-    />
-  </StyledHeader>
-);
+const Header = () => {
+  const navigate = useNavigate();
+  const handleClick = () => navigate("/");
+
+  return (
+    <StyledHeader onClick={handleClick}>
+      <StyledLogo
+        src="https://we-are-hiring.cdn.personio.de/logos/189/social/d6a44328d5a5837c3d130feca49771a1.png"
+        alt="kiwi-logo"
+      />
+    </StyledHeader>
+  );
+};
 
 export default Header;

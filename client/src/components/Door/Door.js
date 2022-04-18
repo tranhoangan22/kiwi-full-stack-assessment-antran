@@ -1,9 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
-
-import { fetchLastSensorCommunication } from "../../services/apis";
-import { getDate } from "../../services/getDate";
 
 const DoorContainer = styled.div`
   display: flex;
@@ -40,23 +37,17 @@ const ItemContainer = styled.div`
   width: 35%;
 `;
 
-const Door = ({ id, name, street, postal_code, city, sensor_uuid }) => {
-  const [lastCommunication, setLastCommunication] = useState(null);
+const Door = ({
+  id,
+  name,
+  street,
+  postal_code,
+  city,
+  lastSensorCommunication,
+}) => {
   const navigate = useNavigate();
 
   const handleClick = () => navigate(`./door/${id}`);
-
-  useEffect(() => {
-    if (sensor_uuid) {
-      fetchLastSensorCommunication(sensor_uuid).then((result) => {
-        if (result.status === 200) {
-          setLastCommunication(getDate(result.data * 1000));
-        } else {
-          setLastCommunication("Not Found");
-        }
-      });
-    }
-  }, [sensor_uuid]);
 
   return (
     <DoorContainer onClick={handleClick}>
@@ -65,11 +56,7 @@ const Door = ({ id, name, street, postal_code, city, sensor_uuid }) => {
       <ItemContainer>
         {street}, {postal_code} {city}
       </ItemContainer>
-      <ItemContainer>
-        {lastCommunication
-          ? lastCommunication
-          : "Loading last communication..."}
-      </ItemContainer>
+      <ItemContainer>{lastSensorCommunication}</ItemContainer>
     </DoorContainer>
   );
 };

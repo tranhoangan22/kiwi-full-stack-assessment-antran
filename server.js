@@ -108,4 +108,22 @@ app.get("/sensorstatus/:uuid", async (req, res) => {
   }
 });
 
+app.get("/sensorstatuses", async (req, res) => {
+  const sensorUUIDs = Object.values(req.query).map(
+    (key) => "last_communication_ts:" + key
+  );
+  try {
+    await redisClient.connect();
+    const jsonData = await redisClient.MGET(sensorUUIDs);
+    if (jsonData) {
+      res.status(200).json(jsonData);
+    } else {
+      res.status(204).json("no values found for such keys");
+    }
+    await redisClient.disconnect();
+  } catch (error) {
+    console.log(error.message);
+  }
+});
+
 app.listen(PORT, () => console.log(`Server up at http://localhost:${PORT}`));

@@ -3,8 +3,12 @@ import styled from "styled-components";
 
 import Door from "../../components/Door/Door";
 
-import { fetchDoors } from "../../services/apis";
+import {
+  fetchDoors,
+  fetchMultipleLastSensorCommunications,
+} from "../../services/apis";
 import { compare } from "../../services/compare";
+import { getDate } from "../../services/getDate";
 
 const Container = styled.div`
   max-width: 80%;
@@ -72,8 +76,12 @@ const ButtonContainer = styled.button`
 
 const DoorsList = () => {
   const [doors, setDoors] = useState([]);
+  const [
+    doorsWithSensorLastCommunications,
+    setDoorWithSensorLastCommunications,
+  ] = useState([]);
   const [numberOfDoorsShown, setNumberOfDoorsShown] = useState(10);
-  const [showLoadMoreButton, setShowLoadMoreButton] = useState(10);
+  const [showLoadMoreButton, setShowLoadMoreButton] = useState(true);
 
   const handleClick = () => {
     if (doors.length > numberOfDoorsShown + 10) {
@@ -83,6 +91,23 @@ const DoorsList = () => {
       setShowLoadMoreButton(false);
     }
   };
+
+  useEffect(() => {
+    if (doors && doors.length > 0) {
+      fetchMultipleLastSensorCommunications(
+        doors.map((door) => door.sensor_uuid)
+      ).then((result) => {
+        const doorsWithSensorsInfo = [];
+        for (let i = 0; i < doors.length; i++) {
+          doorsWithSensorsInfo[i] = {
+            ...doors[i],
+            sensorLastCommunication: getDate(result.data[i] * 1000),
+          };
+        }
+        setDoorWithSensorLastCommunications(doorsWithSensorsInfo);
+      });
+    }
+  }, [doors]);
 
   useEffect(() => {
     fetchDoors().then((response) => setDoors(response.data.sort(compare)));
@@ -105,8 +130,8 @@ const DoorsList = () => {
           <span>Last Communication</span>
         </ListHeaderblock>
       </ListHeader>
-      {doors &&
-        doors
+      {doorsWithSensorLastCommunications &&
+        doorsWithSensorLastCommunications
           .slice(0, numberOfDoorsShown)
           .map((door) => (
             <Door
@@ -116,7 +141,7 @@ const DoorsList = () => {
               street={door.street}
               postal_code={door.postal_code}
               city={door.city}
-              sensor_uuid={door.sensor_uuid}
+              lastSensorCommunication={door.sensorLastCommunication}
             />
           ))}
       {showLoadMoreButton && (
